@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Campina Fit</title>
+
+  <!-- Fonte -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- React + ReactDOM (CDN) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!-- Babel para JSX no navegador -->
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* ===== Estilos principais (mobile-first) ===== */
+    :root {
+      --primary: #00b36b;
+      --primary-2: #00d07a;
+      --muted: #666;
+      --card: #fff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: #f4f6f8;
+      color: #222;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      background: linear-gradient(90deg,var(--primary), var(--primary-2));
+      color: white;
+      padding: 18px;
+      text-align: center;
+      font-family: 'Poppins', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+
+    .app {
+      max-width: 760px;
+      margin: 18px auto;
+      padding: 12px;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 14px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(10,10,10,0.05);
+      margin-bottom: 14px;
+    }
+
+    h2 { margin: 0 0 8px 0; }
+    p { margin: 0 0 10px 0; color: var(--muted); line-height:1.4; }
+
+    /* Blocos de escolha de papel */
+    .roles {
+      display:flex; gap: 12px; flex-direction: column;
+    }
+    .role {
+      display:flex; align-items:center; gap:12px;
+      padding:12px; border-radius:10px; background:#fff;
+      border: 1px solid #e8ecf0; cursor:pointer;
+    }
+    .role img { width:64px; height:64px; border-radius:50%; object-fit:cover; }
+    .role .label { font-weight:600; font-size:16px; }
+
+    /* Botões */
+    .btn {
+      display:inline-block; width:100%; padding:12px; border-radius:10px; border:none;
+      background:var(--primary); color:white; font-weight:600; cursor:pointer;
+    }
+    .btn.secondary { background:#6c757d; margin-top:8px; }
+    .nav-row { display:flex; gap:10px; margin-top:12px; }
+    .nav-row .btn { width:50%; }
+
+    /* Inputs */
+    input, select {
+      width:100%; padding:12px; margin-top:10px; border-radius:8px; border:1px solid #dfe6ea;
+      font-size:14px;
+    }
+
+    /* Catálogo */
+    .catalog .personal {
+      display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px;
+      background:#fff; border-radius:10px; border:1px solid #e8ecf0; margin-bottom:10px;
+    }
+    .personal .left { display:flex; align-items:center; gap:12px; }
+    .personal img { width:66px; height:66px; border-radius:50%; object-fit:cover; }
+    .personal .meta { font-weight:600; }
+    .personal small { color:var(--muted); display:block; }
+
+    /* Página do personal */
+    .personal-page img.big { width:140px; height:140px; border-radius:50%; display:block; margin:10px auto; object-fit:cover; }
+    .personal-info p { margin:8px 0; }
+
+    /* Seletor de dias e horários */
+    .day-row { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+    .day-btn {
+      padding:8px 10px; border-radius:8px; border:1px solid #dfe6ea; background:#fafafa; cursor:pointer;
+      font-weight:700;
+    }
+    .day-btn.active { background: var(--primary); color:white; border-color: var(--primary); }
+
+    .hours { display:flex; gap:8px; margin-top:10px; }
+    .hour {
+      flex:1; text-align:center; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;
+      border:1px solid transparent; user-select:none; font-size:14px;
+    }
+    .hour.available { background:#eaf9ef; color:#006633; border-color:#c4e7c9; }
+    .hour.unavailable { background:#fff2f2; color:#cc3333; border-color:#f1b6b6; cursor:not-allowed; opacity:0.9; }
+    .hour.selected { box-shadow:0 6px 18px rgba(0,0,0,0.06); transform:translateY(-2px); border-color:#009933; }
+
+    /* Abas do dashboard do personal */
+    .tabs { display:flex; gap:8px; margin-bottom:10px; }
+    .tab {
+      padding:10px 14px; border-radius:8px; background:#fff; border:1px solid #e8ecf0; cursor:pointer; font-weight:700;
+    }
+    .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .list .item {
+      background:#fff; padding:10px; border-radius:10px; border:1px solid #e8ecf0; margin-bottom:8px;
+    }
+
+    @media(min-width:800px) {
+      .roles { flex-direction:row; }
+    }
+  </style>
+</head>
+<body>
+  <header>Campina Fit</header>
+
+  <div id="root" class="app"></div>
+
+  <script type="text/babel">
+    /******************************
+     * CAMPINA FIT - app completo
+     * Todos os comentários em português
+     ******************************/
+
+    // ------- dados iniciais (personais fictícios) -------
+    const PERSONAIS_PADRAO = [
+      { id: 1, nome: "Carlos Silva", idade: 29, preco: "R$ 60 / sessão", foto: "https://i.pravatar.cc/150?img=12", qualificacoes: "Musculação, HIIT", academias: "Smart Fit – Centro" },
+      { id: 2, nome: "João Pereira", idade: 32, preco: "R$ 70 / sessão", foto: "https://i.pravatar.cc/150?img=13", qualificacoes: "Hipertrofia, Funcional", academias: "F21 – Catolé" },
+      { id: 3, nome: "Lucas Andrade", idade: 27, preco: "R$ 55 / sessão", foto: "https://i.pravatar.cc/150?img=15", qualificacoes: "Cardio, Mobilidade", academias: "BodyTech – Shopping" },
+      { id: 4, nome: "Bruno Rocha", idade: 30, preco: "R$ 65 / sessão", foto: "https://i.pravatar.cc/150?img=16", qualificacoes: "Cross, Resistência", academias: "Hammer – Liberdade" },
+      { id: 5, nome: "Ricardo Melo", idade: 34, preco: "R$ 80 / sessão", foto: "https://i.pravatar.cc/150?img=17", qualificacoes: "Performance, Fisiologia", academias: "Top Gym – Centro" }
+    ];
+
+    // ------- helpers localStorage -------
+    function carregarPersonais() {
+      try {
+        const raw = localStorage.getItem('campina_personais');
+        if (!raw) { localStorage.setItem('campina_personais', JSON.stringify(PERSONAIS_PADRAO)); return PERSONAIS_PADRAO.slice(); }
+        return JSON.parse(raw);
+      } catch {
+        return PERSONAIS_PADRAO.slice();
+      }
+    }
+    function salvarPersonais(arr) { localStorage.setItem('campina_personais', JSON.stringify(arr)); }
+
+    function salvarUsuario(u) { localStorage.setItem('campina_user', JSON.stringify(u)); }
+    function carregarUsuario() { try { return JSON.parse(localStorage.getItem('campina_user')); } catch { return null; } }
+
+    function salvarAgendamentos(arr) { localStorage.setItem('campina_appointments', JSON.stringify(arr)); }
+    function carregarAgendamentos() { try { return JSON.parse(localStorage.getItem('campina_appointments') || '[]'); } catch { return []; } }
+
+    function uid() { return 'id-' + Date.now() + '-' + Math.floor(Math.random()*9999); }
+    const DIAS = ['SEG','TER','QUA','QUI','SEX','SAB'];
+    const HORARIOS = ['07:00','09:00','14:00','18:00'];
+
+    // ------- componente principal -------
+    function App() {
+      const [tela, setTela] = React.useState('home'); // telas: home | perfil | cadastro | aluno-dashboard | personal-dashboard | personal-page
+      const [papelSelecionado, setPapelSelecionado] = React.useState(null);
+      const [personais, setPersonais] = React.useState(() => carregarPersonais());
+      const [usuario, setUsuario] = React.useState(() => carregarUsuario());
+      const [agendamentos, setAgendamentos] = React.useState(() => carregarAgendamentos());
+      const [personalSelecionado, setPersonalSelecionado] = React.useState(null);
+
+      // manter localStorage sincronizado para personais e agendamentos
+      React.useEffect(()=> { salvarPersonais(personais); }, [personais]);
+      React.useEffect(()=> { salvarAgendamentos(agendamentos); }, [agendamentos]);
+
+      // atualizar usuário do localStorage ao montar (se existir)
+      React.useEffect(()=> {
+        const u = carregarUsuario();
+        if (u) setUsuario(u);
+      }, []);
+
+      // funções de navegação
+      function irParaPerfil(papel) { setPapelSelecionado(papel); setTela('perfil'); }
+      function avancarDePerfil() { if (!papelSelecionado) { alert('Escolha um perfil primeiro.'); return; } setTela('cadastro'); }
+      function voltarDe(per) {
+        if (per === 'perfil') { setTela('home'); setPapelSelecionado(null); return; }
+        if (per === 'cadastro') { setTela('perfil'); return; }
+        if (per === 'aluno-dashboard' || per === 'personal-dashboard') { setTela('cadastro'); return; }
+      }
+
+      // após cadastro concluído
+      function onCadastroConcluido(novoUsuario) {
+        salvarUsuario(novoUsuario);
+        setUsuario(novoUsuario);
+        if (novoUsuario.role === 'aluno') setTela('aluno-dashboard');
+        else setTela('personal-dashboard');
+      }
+
+      // abrir página individual do personal (aluno)
+      function abrirPaginaPersonal(p) { setPersonalSelecionado(p); setTela('personal-page'); }
+
+      // criar agendamento
+      function criarAgendamento(agendamento) {
+        setAgendamentos(prev => {
+          const proximo = [...prev, agendamento];
+          salvarAgendamentos(proximo);
+          return proximo;
+        });
+      }
+
+      // atualizar status do agendamento (aprovado/recusado)
+      function atualizarStatusAgendamento(id, status) {
+        setAgendamentos(prev => {
+          const proximo = prev.map(a => a.id === id ? {...a, status} : a);
+          salvarAgendamentos(proximo);
+          return proximo;
+        });
+      }
+
+      // atualizar perfil do personal vinculado ao usuário (se houver) e usuário
+      function atualizarPerfilUsuario(usuarioAtualizado) {
+        // salvar usuário
+        salvarUsuario(usuarioAtualizado);
+        setUsuario(usuarioAtualizado);
+
+        // se o usuário estiver vinculado a um personal existente, atualizar esse personal também
+        if (usuarioAtualizado.linkedPersonalId) {
+          const pid = Number(usuarioAtualizado.linkedPersonalId);
+          setPersonais(prev => {
+            const proximo = prev.map(p => p.id === pid ? {
+              ...p,
+              nome: usuarioAtualizado.nome,
+              idade: usuarioAtualizado.idade,
+              preco: usuarioAtualizado.preco || p.preco,
+              qualificacoes: usuarioAtualizado.qualificacoes || p.qualificacoes,
+              academias: usuarioAtualizado.academias || p.academias
+            } : p);
+            salvarPersonais(proximo);
+            return proximo;
+          });
+        }
+      }
+
+      // quando localStorage muda em outra aba, atualizar estado
+      React.useEffect(()=> {
+        function escutaStorage(e) {
+          if (e.key === 'campina_appointments') setAgendamentos(carregarAgendamentos());
+          if (e.key === 'campina_personais') setPersonais(carregarPersonais());
+          if (e.key === 'campina_user') setUsuario(carregarUsuario());
+        }
+        window.addEventListener('storage', escutaStorage);
+        return ()=> window.removeEventListener('storage', escutaStorage);
+      }, []);
+
+      // render das telas
+      return (
+        <div>
+          {tela === 'home' && (
+            <div className="card">
+              <h2 style={{textAlign:'center'}}>Unindo personais e alunos para uma Campina Grande mais saudável</h2>
+              <p style={{textAlign:'center'}}>Conectamos profissionais e alunos locais, facilitando treinos, agendamentos e acompanhamento.</p>
+
+              <div className="roles" style={{marginTop:12}}>
+                <div className="role" onClick={()=>irParaPerfil('aluno')}>
+                  <img src="https://cdn-icons-png.flaticon.com/512/706/706164.png" alt="aluno"/>
+                  <div>
+                    <div className="label">Sou Aluno</div>
+                    <small>Procurar personais e agendar treinos</small>
+                  </div>
+                </div>
+
+                <div className="role" onClick={()=>irParaPerfil('personal')}>
+                  <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" alt="personal"/>
+                  <div>
+                    <div className="label">Sou Personal</div>
+                    <small>Gerenciar agenda e alunos</small>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{marginTop:12}}>
+                <button className="btn" onClick={()=>irParaPerfil('aluno')}>Começar como Aluno</button>
+                <button className="btn" style={{marginTop:8}} onClick={()=>irParaPerfil('personal')}>Começar como Personal</button>
+              </div>
+            </div>
+          )}
+
+          {tela === 'perfil' && (
+            <div className="card">
+              <h2>Quem é você?</h2>
+              <p>Escolha o perfil para prosseguir com o cadastro.</p>
+
+              <div className="roles" style={{marginTop:12}}>
+                <div className="role" onClick={()=>setPapelSelecionado('aluno')}>
+                  <img src="https://cdn-icons-png.flaticon.com/512/706/706164.png" alt="aluno"/>
+                  <div>
+                    <div className="label">Aluno</div>
+                    <small>Buscar e contratar personais</small>
+                  </div>
+                </div>
+
+                <div className="role" onClick={()=>setPapelSelecionado('personal')}>
+                  <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" alt="personal"/>
+                  <div>
+                    <div className="label">Personal Trainer</div>
+                    <small>Gerenciar clientes e agenda</small>
+                  </div>
+                </div>
+              </div>
+
+              <div className="nav-row" style={{marginTop:14}}>
+                <button className="btn secondary" onClick={()=>voltarDe('perfil')}>◀ Voltar</button>
+                <button className="btn" onClick={avancarDePerfil}>Avançar ▶</button>
+              </div>
+            </div>
+          )}
+
+          {tela === 'cadastro' && (
+            <Cadastro
+              role={papelSelecionado}
+              onCancel={()=>voltarDe('cadastro')}
+              onComplete={onCadastroConcluido}
+              personais={personais}
+            />
+          )}
+
+          {tela === 'aluno-dashboard' && (
+            <DashboardAluno
+              personais={personais}
+              onView={p=>abrirPaginaPersonal(p)}
+              onLogout={() => { localStorage.removeItem('campina_user'); setUsuario(null); setTela('home'); }}
+            />
+          )}
+
+          {tela === 'personal-dashboard' && (
+            <DashboardPersonal
+              usuario={usuario}
+              agendamentos={agendamentos}
+              onAceitar={(id)=>atualizarStatusAgendamento(id,'aprovado')}
+              onRecusar={(id)=>atualizarStatusAgendamento(id,'recusado')}
+              onSalvarPerfil={atualizarPerfilUsuario}
+              personais={personais}
+              onLogout={() => { localStorage.removeItem('campina_user'); setUsuario(null); setTela('home'); }}
+            />
+          )}
+
+          {tela === 'personal-page' && personalSelecionado && (
+            <PersonalPage
+              personal={personalSelecionado}
+              onBack={()=>setTela('aluno-dashboard')}
+              onCreateAppointment={(a)=>criarAgendamento(a)}
+              currentUser={usuario}
+              agendamentos={agendamentos}
+            />
+          )}
+        </div>
+      );
+    }
+
+    // ------- componente de cadastro (validação obrigatória) -------
+    function Cadastro({ role, onCancel, onComplete, personais }) {
+      const [nome, setNome] = React.useState('');
+      const [idade, setIdade] = React.useState('');
+      const [email, setEmail] = React.useState('');
+      const [senha, setSenha] = React.useState('');
+      const [vincularId, setVincularId] = React.useState('none');
+      const [preco, setPreco] = React.useState('');
+      const [qualificacoes, setQualificacoes] = React.useState('');
+      const [academias, setAcademias] = React.useState('');
+
+      function cadastrar() {
+        if (!nome.trim() || !idade || !email.trim() || !senha.trim()) {
+          alert('Preencha todos os campos antes de cadastrar.');
+          return;
+        }
+        const id = uid();
+        const novoUsuario = {
+          id,
+          nome,
+          idade,
+          email,
+          senha,
+          role,
+          linkedPersonalId: vincularId === 'none' ? null : Number(vincularId),
+          preco,
+          qualificacoes,
+          academias
+        };
+        onComplete(novoUsuario);
+      }
+
+      return (
+        <div className="card">
+          <h2>{role === 'aluno' ? 'Cadastro - Aluno' : 'Cadastro - Personal'}</h2>
+
+          <input placeholder="Nome completo" value={nome} onChange={e=>setNome(e.target.value)} />
+          <input placeholder="Idade" type="number" value={idade} onChange={e=>setIdade(e.target.value)} />
+          <input placeholder="E-mail" type="email" value={email} onChange={e=>setEmail(e.target.value)} />
+          <input placeholder="Senha" type="password" value={senha} onChange={e=>setSenha(e.target.value)} />
+
+          {role === 'personal' && (
+            <div style={{marginTop:10}}>
+              <label style={{fontWeight:700}}>Vincular a um perfil existente (opcional)</label>
+              <select value={vincularId} onChange={e=>setVincularId(e.target.value)} style={{marginTop:8}}>
+                <option value="none">Não vincular (criar novo)</option>
+                {personais.map(p => <option key={p.id} value={p.id}>{p.nome} — {p.academias}</option>)}
+              </select>
+
+              <input placeholder="Preço por sessão (ex: R$ 60 / sessão)" value={preco} onChange={e=>setPreco(e.target.value)} style={{marginTop:8}} />
+              <input placeholder="Qualificações (vírgula separadas)" value={qualificacoes} onChange={e=>setQualificacoes(e.target.value)} style={{marginTop:8}} />
+              <input placeholder="Academias onde atua" value={academias} onChange={e=>setAcademias(e.target.value)} style={{marginTop:8}} />
+            </div>
+          )}
+
+          <div style={{marginTop:12}}>
+            <button className="btn" onClick={cadastrar}>Cadastrar</button>
+            <button className="btn secondary" onClick={onCancel}>Voltar</button>
+          </div>
+        </div>
+      );
+    }
+
+    // ------- dashboard do aluno (catálogo) -------
+    function DashboardAluno({ personais, onView, onLogout }) {
+      return (
+        <div>
+          <div className="card">
+            <h2>Catálogo de Personais</h2>
+            <p>Escolha um personal e acesse os serviços.</p>
+          </div>
+
+          <div className="catalog">
+            {personais.map(p => (
+              <div key={p.id} className="personal card" style={{padding:12, marginBottom:8}}>
+                <div className="left">
+                  <img src={p.foto} alt={p.nome} />
+                  <div>
+                    <div className="meta">{p.nome}</div>
+                    <small>{p.preco}</small>
+                  </div>
+                </div>
+
+                <div style={{display:'flex', flexDirection:'column', gap:8}}>
+                  <button className="btn" style={{padding:'8px 10px', minWidth:110}} onClick={()=>onView(p)}>Ver serviços</button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{marginTop:12}}>
+            <button className="btn secondary" onClick={onLogout}>Sair</button>
+          </div>
+        </div>
+      );
+    }
+
+    // ------- página individual do personal (aluno) -------
+    function PersonalPage({ personal, onBack, onCreateAppointment, currentUser, agendamentos }) {
+      const [diaSelecionado, setDiaSelecionado] = React.useState(null);
+      const [horaSelecionada, setHoraSelecionada] = React.useState(null);
+
+      // verifica se o horário está disponível para esse personal e dia
+      function horarioDisponivel(dia, hora) {
+        // se já existe agendamento para mesmo personal/dia/hora e status != 'recusado', bloquear
+        return !agendamentos.some(a =>
+          a.personalId === personal.id && a.dia === dia && a.hora === hora && a.status !== 'recusado'
+        );
+      }
+
+      function confirmarAgendamento() {
+        if (!diaSelecionado || !horaSelecionada) { alert('Escolha dia e horário.'); return; }
+        const ag = {
+          id: uid(),
+          personalId: personal.id,
+          personalNome: personal.nome,
+          dia: diaSelecionado,
+          hora: horaSelecionada,
+          alunoName: currentUser ? currentUser.nome : null,
+          alunoEmail: currentUser ? currentUser.email : null,
+          status: 'pendente',
+          createdAt: new Date().toISOString()
+        };
+        onCreateAppointment(ag);
+        alert(`Solicitação enviada: ${diaSelecionado} às ${horaSelecionada} (pendente)`);
+        setDiaSelecionado(null);
+        setHoraSelecionada(null);
+      }
+
+      return (
+        <div>
+          <div className="card personal-page">
+            <h2 style={{textAlign:'center'}}>{personal.nome}</h2>
+            <img className="big" src={personal.foto} alt={personal.nome} />
+            <div className="personal-info">
+              <p><strong>Idade:</strong> {personal.idade}</p>
+              <p><strong>Qualificações:</strong> {personal.qualificacoes}</p>
+              <p><strong>Academias:</strong> {personal.academias}</p>
+              <p><strong>Preço:</strong> {personal.preco}</p>
+            </div>
+
+            <div style={{marginTop:10}}>
+              <strong>Escolha o dia:</strong>
+              <div className="day-row">
+                {DIAS.map(d => (
+                  <div key={d} className={'day-btn ' + (diaSelecionado===d ? 'active' : '')} onClick={()=>{ setDiaSelecionado(d); setHoraSelecionada(null); }}>
+                    {d}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {diaSelecionado && (
+              <div style={{marginTop:12}} className="card">
+                <strong>Horários para {diaSelecionado}</strong>
+                <div className="hours">
+                  {HORARIOS.map(h => {
+                    const disponivel = horarioDisponivel(diaSelecionado, h);
+                    return (
+                      <div key={h}
+                        className={'hour ' + (disponivel ? 'available' : 'unavailable') + (horaSelecionada===h ? ' selected' : '')}
+                        onClick={() => disponivel && setHoraSelecionada(h)}
+                      >
+                        {h}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div style={{marginTop:12}}>
+                  <button className="btn" onClick={confirmarAgendamento} disabled={!horaSelecionada}>
+                    Confirmar {horaSelecionada ? (' - ' + horaSelecionada) : ''}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div style={{marginTop:12}}>
+              <button className="btn secondary" onClick={onBack}>Voltar</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ------- dashboard do personal com abas (PEDIDOS / MEU PERFIL) -------
+    function DashboardPersonal({ usuario, agendamentos, onAceitar, onRecusar, onSalvarPerfil, personais, onLogout }) {
+      const [abaAtiva, setAbaAtiva] = React.useState('pedidos'); // pedidos | perfil
+      const [editavel, setEditavel] = React.useState(false);
+      const [perfil, setPerfil] = React.useState(usuario || { nome:'', idade:'', email:'', preco:'', qualificacoes:'', academias:'', linkedPersonalId:null });
+
+      React.useEffect(()=> { setPerfil(usuario || { nome:'', idade:'', email:'', preco:'', qualificacoes:'', academias:'', linkedPersonalId:null }); }, [usuario]);
+
+      // obter agendamentos relacionados ao personal do usuario
+      const agendamentosRelevantes = React.useMemo(()=> {
+        if (!usuario) return [];
+        const linkedId = usuario.linkedPersonalId ? Number(usuario.linkedPersonalId) : null;
+        // se o usuário vinculou a um personal fictício, filtrar por esse id; caso contrário, filtrar por personalId === usuário.id
+        return agendamentos.filter(a => (linkedId ? a.personalId === linkedId : a.personalId === usuario.id));
+      }, [agendamentos, usuario]);
+
+      function salvarPerfil() {
+        if (!perfil.nome || !perfil.email) { alert('Nome e email são obrigatórios'); return; }
+        onSalvarPerfil({...usuario, ...perfil});
+        setEditavel(false);
+        alert('Perfil salvo');
+      }
+
+      return (
+        <div>
+          <div className="card">
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+              <h2>Dashboard do Personal</h2>
+              <div style={{fontSize:13, color: 'var(--muted)'}}>Olá, {usuario ? usuario.nome : '—'}</div>
+            </div>
+
+            <div className="tabs" style={{marginTop:12}}>
+              <div className={'tab ' + (abaAtiva==='pedidos' ? 'active' : '')} onClick={()=>setAbaAtiva('pedidos')}>PEDIDOS</div>
+              <div className={'tab ' + (abaAtiva==='perfil' ? 'active' : '')} onClick={()=>setAbaAtiva('perfil')}>MEU PERFIL</div>
+            </div>
+
+            {abaAtiva === 'pedidos' && (
+              <div>
+                <h3 style={{marginTop:8}}>Pedidos recebidos</h3>
+                <p style={{color:'var(--muted)'}}>Aprovar ou recusar solicitações de agendamento.</p>
+
+                <div className="list" style={{marginTop:10}}>
+                  {agendamentosRelevantes.length === 0 && <div className="item">Nenhum pedido no momento.</div>}
+
+                  {agendamentosRelevantes.slice().reverse().map(a => (
+                    <div key={a.id} className="item">
+                      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                        <div>
+                          <strong>{a.alunoName || 'Aluno anônimo'}</strong>
+                          <div style={{fontSize:13, color:'var(--muted)'}}>{a.alunoEmail || ''}</div>
+                        </div>
+                        <div style={{textAlign:'right'}}>
+                          <div style={{fontSize:14}}>{a.dia} • {a.hora}</div>
+                          <div style={{fontSize:12, color:'var(--muted)', marginTop:6}}>Status: <b>{a.status}</b></div>
+                        </div>
+                      </div>
+
+                      <div className="actions" style={{marginTop:8}}>
+                        {a.status === 'pendente' && (
+                          <>
+                            <button className="btn" style={{background:'#00b36b'}} onClick={()=>onAceitar(a.id)}>Aceitar</button>
+                            <button className="btn secondary" style={{background:'#e74c3c', color:'#fff'}} onClick={()=>onRecusar(a.id)}>Recusar</button>
+                          </>
+                        )}
+
+                        {a.status === 'aprovado' && <div style={{marginTop:8, color:'#0a8f3d', fontWeight:700}}>Aprovado ✔</div>}
+                        {a.status === 'recusado' && <div style={{marginTop:8, color:'#aa2f2f', fontWeight:700}}>Recusado ✖</div>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {abaAtiva === 'perfil' && (
+              <div style={{marginTop:12}}>
+                <h3>Meu Perfil</h3>
+                <p style={{color:'var(--muted)'}}>Edite seus dados e salve.</p>
+
+                <div style={{marginTop:8}}>
+                  <label style={{fontSize:13}}>Nome</label>
+                  <input value={perfil.nome || ''} disabled={!editavel} onChange={(e)=>setPerfil({...perfil, nome:e.target.value})} />
+                  <label style={{fontSize:13}}>Idade</label>
+                  <input type="number" value={perfil.idade || ''} disabled={!editavel} onChange={(e)=>setPerfil({...perfil, idade:e.target.value})} />
+                  <label style={{fontSize:13}}>Email</label>
+                  <input value={perfil.email || ''} disabled={!editavel} onChange={(e)=>setPerfil({...perfil, email:e.target.value})} />
+                  <label style={{fontSize:13}}>Preço por sessão</label>
+                  <input value={perfil.preco || ''} disabled={!editavel} onChange={(e)=>setPerfil({...perfil, preco:e.target.value})} />
+                  <label style={{fontSize:13}}>Qualificações</label>
+                  <input value={perfil.qualificacoes || ''} disabled={!editavel} onChange={(e)=>setPerfil({...perfil, qualificacoes:e.target.value})} />
+                  <label style={{fontSize:13}}>Academias</label>
+                  <input value={perfil.academias || ''} disabled={!editavel} onChange={(e)=>setPerfil({...perfil, academias:e.target.value})} />
+
+                  <div style={{display:'flex', gap:8, marginTop:10}}>
+                    {!editavel ? (
+                      <button className="btn" onClick={()=>setEditavel(true)}>Editar Perfil</button>
+                    ) : (
+                      <>
+                        <button className="btn" onClick={salvarPerfil}>Salvar</button>
+                        <button className="btn secondary" onClick={()=>{ setEditavel(false); setPerfil(usuario || {}); }}>Cancelar</button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div style={{marginTop:12}}>
+              <button className="btn secondary" onClick={onLogout}>Sair</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ------- render do app -------
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
