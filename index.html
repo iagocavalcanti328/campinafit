@@ -58,7 +58,9 @@
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(10,10,10,0.05);
       margin-bottom: 14px;
+      transition: transform .12s ease, box-shadow .12s ease;
     }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
 
     h2 { margin: 0 0 8px 0; }
     p { margin: 0 0 10px 0; color: var(--muted); line-height:1.4; }
@@ -71,16 +73,26 @@
       display:flex; align-items:center; gap:12px;
       padding:12px; border-radius:10px; background:#fff;
       border: 1px solid #e8ecf0; cursor:pointer;
+      transition: transform .12s ease, background .12s ease;
     }
-    .role img { width:64px; height:64px; border-radius:50%; object-fit:cover; }
+    .role img { width:64px; height:64px; border-radius:50%; object-fit:cover; transition: transform .12s ease, filter .12s ease; }
     .role .label { font-weight:600; font-size:16px; }
+
+    .role:hover { transform: translateY(-4px); background: #f0fff5; }
+    .role:hover img { transform: scale(1.06); filter: brightness(1.03); }
 
     /* Botões */
     .btn {
       display:inline-block; width:100%; padding:12px; border-radius:10px; border:none;
       background:var(--primary); color:white; font-weight:600; cursor:pointer;
+      transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
     }
+    .btn:hover { transform: translateY(-3px); background: #009f5b; box-shadow: 0 6px 14px rgba(0,0,0,0.08); }
+    .btn:active { transform: translateY(-1px); }
+
     .btn.secondary { background:#6c757d; margin-top:8px; }
+    .btn.secondary:hover { background:#5a6469; }
+
     .nav-row { display:flex; gap:10px; margin-top:12px; }
     .nav-row .btn { width:50%; }
 
@@ -94,11 +106,27 @@
     .catalog .personal {
       display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px;
       background:#fff; border-radius:10px; border:1px solid #e8ecf0; margin-bottom:10px;
+      transition: transform .12s ease, box-shadow .12s ease;
     }
+    .catalog .personal:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
     .personal .left { display:flex; align-items:center; gap:12px; }
-    .personal img { width:66px; height:66px; border-radius:50%; object-fit:cover; }
+    .personal img { width:66px; height:66px; border-radius:50%; object-fit:cover; transition: transform .12s ease; }
+    .personal img:hover { transform: scale(1.04); }
     .personal .meta { font-weight:600; }
     .personal small { color:var(--muted); display:block; }
+
+    /* delete button for created personals */
+    .btn-delete {
+      background: linear-gradient(180deg,#ff6b6b,#e63939);
+      color: #fff;
+      border: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-weight:700;
+      cursor:pointer;
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .btn-delete:hover { transform: translateY(-2px); filter: brightness(.92); }
 
     /* Página do personal */
     .personal-page img.big { width:140px; height:140px; border-radius:50%; display:block; margin:10px auto; object-fit:cover; }
@@ -108,15 +136,17 @@
     .day-row { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
     .day-btn {
       padding:8px 10px; border-radius:8px; border:1px solid #dfe6ea; background:#fafafa; cursor:pointer;
-      font-weight:700;
+      font-weight:700; transition: transform .12s ease, background .12s ease;
     }
+    .day-btn:hover { transform: translateY(-2px); background:#f0fdf5; }
     .day-btn.active { background: var(--primary); color:white; border-color: var(--primary); }
 
     .hours { display:flex; gap:8px; margin-top:10px; }
     .hour {
       flex:1; text-align:center; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;
-      border:1px solid transparent; user-select:none; font-size:14px;
+      border:1px solid transparent; user-select:none; font-size:14px; transition: transform .12s ease;
     }
+    .hour:hover { transform: translateY(-2px); }
     .hour.available { background:#eaf9ef; color:#006633; border-color:#c4e7c9; }
     .hour.unavailable { background:#fff2f2; color:#cc3333; border-color:#f1b6b6; cursor:not-allowed; opacity:0.9; }
     .hour.selected { box-shadow:0 6px 18px rgba(0,0,0,0.06); transform:translateY(-2px); border-color:#009933; }
@@ -125,12 +155,35 @@
     .tabs { display:flex; gap:8px; margin-bottom:10px; }
     .tab {
       padding:10px 14px; border-radius:8px; background:#fff; border:1px solid #e8ecf0; cursor:pointer; font-weight:700;
+      transition: background .12s ease, transform .12s ease;
     }
+    .tab:hover { transform: translateY(-2px); }
     .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
 
     .list .item {
       background:#fff; padding:10px; border-radius:10px; border:1px solid #e8ecf0; margin-bottom:8px;
     }
+
+    /* modal de confirmação de exclusão */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.45);
+      z-index: 120;
+    }
+    .modal-overlay.show { display:flex; }
+    .modal-card {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      max-width: 420px;
+      width: 92%;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    }
+    .modal-row { display:flex; gap:8px; margin-top:14px; justify-content:flex-end; }
 
     @media(min-width:800px) {
       .roles { flex-direction:row; }
@@ -145,24 +198,30 @@
   <script type="text/babel">
     /******************************
      * CAMPINA FIT - app completo
-     * Todos os comentários em português
      ******************************/
 
     // ------- dados iniciais (personais fictícios) -------
     const PERSONAIS_PADRAO = [
-      { id: 1, nome: "Carlos Silva", idade: 29, preco: "R$ 60 / sessão", foto: "https://i.pravatar.cc/150?img=12", qualificacoes: "Musculação, HIIT", academias: "Smart Fit – Centro" },
-      { id: 2, nome: "João Pereira", idade: 32, preco: "R$ 70 / sessão", foto: "https://i.pravatar.cc/150?img=13", qualificacoes: "Hipertrofia, Funcional", academias: "F21 – Catolé" },
-      { id: 3, nome: "Lucas Andrade", idade: 27, preco: "R$ 55 / sessão", foto: "https://i.pravatar.cc/150?img=15", qualificacoes: "Cardio, Mobilidade", academias: "BodyTech – Shopping" },
-      { id: 4, nome: "Bruno Rocha", idade: 30, preco: "R$ 65 / sessão", foto: "https://i.pravatar.cc/150?img=16", qualificacoes: "Cross, Resistência", academias: "Hammer – Liberdade" },
-      { id: 5, nome: "Ricardo Melo", idade: 34, preco: "R$ 80 / sessão", foto: "https://i.pravatar.cc/150?img=17", qualificacoes: "Performance, Fisiologia", academias: "Top Gym – Centro" }
+      { id: 1, nome: "Carlos Silva", idade: 29, preco: "R$ 60 / sessão", foto: "https://i.pravatar.cc/150?img=12", qualificacoes: "Musculação, HIIT", academias: "Smart Fit – Centro", isDefault: true },
+      { id: 2, nome: "João Pereira", idade: 32, preco: "R$ 70 / sessão", foto: "https://i.pravatar.cc/150?img=13", qualificacoes: "Hipertrofia, Funcional", academias: "F21 – Catolé", isDefault: true },
+      { id: 3, nome: "Lucas Andrade", idade: 27, preco: "R$ 55 / sessão", foto: "https://i.pravatar.cc/150?img=15", qualificacoes: "Cardio, Mobilidade", academias: "BodyTech – Shopping", isDefault: true },
+      { id: 4, nome: "Bruno Rocha", idade: 30, preco: "R$ 65 / sessão", foto: "https://i.pravatar.cc/150?img=16", qualificacoes: "Cross, Resistência", academias: "Hammer – Liberdade", isDefault: true },
+      { id: 5, nome: "Ricardo Melo", idade: 34, preco: "R$ 80 / sessão", foto: "https://i.pravatar.cc/150?img=17", qualificacoes: "Performance, Fisiologia", academias: "Top Gym – Centro", isDefault: true }
     ];
 
     // ------- helpers localStorage -------
     function carregarPersonais() {
       try {
         const raw = localStorage.getItem('campina_personais');
-        if (!raw) { localStorage.setItem('campina_personais', JSON.stringify(PERSONAIS_PADRAO)); return PERSONAIS_PADRAO.slice(); }
-        return JSON.parse(raw);
+        if (!raw) {
+          // inicializa com defaults (marcados como isDefault:true)
+          localStorage.setItem('campina_personais', JSON.stringify(PERSONAIS_PADRAO));
+          return PERSONAIS_PADRAO.slice();
+        }
+        const parsed = JSON.parse(raw);
+        // Garantir que personais padrão tenham isDefault true (compatibilidade)
+        const merged = parsed.map(p => ({ ...p, isDefault: p.isDefault === undefined ? false : p.isDefault }));
+        return merged;
       } catch {
         return PERSONAIS_PADRAO.slice();
       }
@@ -188,6 +247,10 @@
       const [agendamentos, setAgendamentos] = React.useState(() => carregarAgendamentos());
       const [personalSelecionado, setPersonalSelecionado] = React.useState(null);
 
+      // modal de exclusão
+      const [modalExcluirOpen, setModalExcluirOpen] = React.useState(false);
+      const [toDelete, setToDelete] = React.useState({ id: null, nome: '' });
+
       // manter localStorage sincronizado para personais e agendamentos
       React.useEffect(()=> { salvarPersonais(personais); }, [personais]);
       React.useEffect(()=> { salvarAgendamentos(agendamentos); }, [agendamentos]);
@@ -209,6 +272,27 @@
 
       // após cadastro concluído
       function onCadastroConcluido(novoUsuario) {
+        // se for personal, criar perfil de personal (marcado isDefault:false)
+        if (novoUsuario.role === 'personal') {
+          const newPersonal = {
+            id: Date.now(),
+            nome: novoUsuario.nome,
+            idade: novoUsuario.idade,
+            preco: novoUsuario.preco || 'R$ 60 / sessão',
+            foto: novoUsuario.fotoPath || 'https://i.pravatar.cc/150?img=65',
+            qualificacoes: novoUsuario.qualificacoes || '',
+            academias: novoUsuario.academias || '',
+            isDefault: false
+          };
+          setPersonais(prev => {
+            const next = [...prev, newPersonal];
+            salvarPersonais(next);
+            return next;
+          });
+          // vincular o usuário ao personal criado (opcional)
+          novoUsuario.linkedPersonalId = newPersonal.id;
+        }
+
         salvarUsuario(novoUsuario);
         setUsuario(novoUsuario);
         if (novoUsuario.role === 'aluno') setTela('aluno-dashboard');
@@ -260,6 +344,41 @@
         }
       }
 
+      // excluir personal por id (só se não for padrão)
+      function solicitarExcluirPersonal(id, nome) {
+        const p = personais.find(pp => pp.id === id);
+        if (!p) return;
+        if (p.isDefault) {
+          alert('Este perfil é padrão e não pode ser excluído.');
+          return;
+        }
+        setToDelete({ id, nome });
+        setModalExcluirOpen(true);
+      }
+
+      function confirmarExcluirPersonal() {
+        if (!toDelete.id) return;
+        setPersonais(prev => {
+          const proximo = prev.filter(p => p.id !== toDelete.id);
+          salvarPersonais(proximo);
+          return proximo;
+        });
+        // se o usuário atual estava vinculado a esse personal, desvincular
+        if (usuario && usuario.linkedPersonalId === toDelete.id) {
+          const u = { ...usuario, linkedPersonalId: null };
+          salvarUsuario(u);
+          setUsuario(u);
+        }
+        setToDelete({ id: null, nome: '' });
+        setModalExcluirOpen(false);
+        alert('Personal excluído.');
+      }
+
+      function cancelarExcluir() {
+        setToDelete({ id: null, nome: '' });
+        setModalExcluirOpen(false);
+      }
+
       // quando localStorage muda em outra aba, atualizar estado
       React.useEffect(()=> {
         function escutaStorage(e) {
@@ -297,10 +416,7 @@
                 </div>
               </div>
 
-              <div style={{marginTop:12}}>
-                <button className="btn" onClick={()=>irParaPerfil('aluno')}>Começar como Aluno</button>
-                <button className="btn" style={{marginTop:8}} onClick={()=>irParaPerfil('personal')}>Começar como Personal</button>
-              </div>
+              
             </div>
           )}
 
@@ -348,6 +464,7 @@
               personais={personais}
               onView={p=>abrirPaginaPersonal(p)}
               onLogout={() => { localStorage.removeItem('campina_user'); setUsuario(null); setTela('home'); }}
+              onRequestDelete={(id, nome) => solicitarExcluirPersonal(id, nome)}
             />
           )}
 
@@ -372,6 +489,20 @@
               agendamentos={agendamentos}
             />
           )}
+
+          {/* Modal de confirmação de exclusão */}
+          <div className={'modal-overlay ' + (modalExcluirOpen ? 'show' : '')}>
+            <div className="modal-card">
+              <h3>Excluir personal?</h3>
+              <p>Deseja realmente excluir <strong>{toDelete.nome}</strong>? Esta ação removerá o perfil criado.</p>
+              <div style={{color:'var(--muted)', marginTop:8}}>Perfis padrão não podem ser excluídos.</div>
+              <div className="modal-row">
+                <button className="btn secondary" onClick={cancelarExcluir}>Cancelar</button>
+                <button className="btn" onClick={confirmarExcluirPersonal}>Excluir</button>
+              </div>
+            </div>
+          </div>
+
         </div>
       );
     }
@@ -386,6 +517,7 @@
       const [preco, setPreco] = React.useState('');
       const [qualificacoes, setQualificacoes] = React.useState('');
       const [academias, setAcademias] = React.useState('');
+      const [fotoPath, setFotoPath] = React.useState('https://i.pravatar.cc/150?img=65');
 
       function cadastrar() {
         if (!nome.trim() || !idade || !email.trim() || !senha.trim()) {
@@ -403,7 +535,8 @@
           linkedPersonalId: vincularId === 'none' ? null : Number(vincularId),
           preco,
           qualificacoes,
-          academias
+          academias,
+          fotoPath
         };
         onComplete(novoUsuario);
       }
@@ -425,6 +558,7 @@
                 {personais.map(p => <option key={p.id} value={p.id}>{p.nome} — {p.academias}</option>)}
               </select>
 
+              <input placeholder="Caminho da foto (URL)" value={fotoPath} onChange={e=>setFotoPath(e.target.value)} style={{marginTop:8}} />
               <input placeholder="Preço por sessão (ex: R$ 60 / sessão)" value={preco} onChange={e=>setPreco(e.target.value)} style={{marginTop:8}} />
               <input placeholder="Qualificações (vírgula separadas)" value={qualificacoes} onChange={e=>setQualificacoes(e.target.value)} style={{marginTop:8}} />
               <input placeholder="Academias onde atua" value={academias} onChange={e=>setAcademias(e.target.value)} style={{marginTop:8}} />
@@ -440,7 +574,7 @@
     }
 
     // ------- dashboard do aluno (catálogo) -------
-    function DashboardAluno({ personais, onView, onLogout }) {
+    function DashboardAluno({ personais, onView, onLogout, onRequestDelete }) {
       return (
         <div>
           <div className="card">
@@ -459,8 +593,13 @@
                   </div>
                 </div>
 
-                <div style={{display:'flex', flexDirection:'column', gap:8}}>
+                <div style={{display:'flex', alignItems:'center', gap:8}}>
                   <button className="btn" style={{padding:'8px 10px', minWidth:110}} onClick={()=>onView(p)}>Ver serviços</button>
+
+                  {/* mostrar botão Excluir apenas se NÃO for padrão */}
+                  {p.isDefault !== true && (
+                    <button className="btn-delete" onClick={() => onRequestDelete(p.id, p.nome)}>Excluir</button>
+                  )}
                 </div>
               </div>
             ))}
@@ -681,3 +820,4 @@
   </script>
 </body>
 </html>
+
