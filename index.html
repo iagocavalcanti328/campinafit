@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Campina Fit</title>
 
-  <!-- Fonte -->
+  
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 
-  <!-- React + ReactDOM (CDN) -->
+  
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 
-  <!-- Babel para JSX no navegador -->
+  
   <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    /* ===== Estilos principais (mobile-first) ===== */
+    
     :root {
       --primary: #00b36b;
       --primary-2: #00d07a;
@@ -65,7 +65,7 @@
     h2 { margin: 0 0 8px 0; }
     p { margin: 0 0 10px 0; color: var(--muted); line-height:1.4; }
 
-    /* Blocos de escolha de papel */
+    /* escolhendo personal / aluno */
     .roles {
       display:flex; gap: 12px; flex-direction: column;
     }
@@ -96,13 +96,13 @@
     .nav-row { display:flex; gap:10px; margin-top:12px; }
     .nav-row .btn { width:50%; }
 
-    /* Inputs */
+    
     input, select {
       width:100%; padding:12px; margin-top:10px; border-radius:8px; border:1px solid #dfe6ea;
       font-size:14px;
     }
 
-    /* Catálogo */
+    
     .catalog .personal {
       display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px;
       background:#fff; border-radius:10px; border:1px solid #e8ecf0; margin-bottom:10px;
@@ -115,7 +115,7 @@
     .personal .meta { font-weight:600; }
     .personal small { color:var(--muted); display:block; }
 
-    /* delete button for created personals */
+    
     .btn-delete {
       background: linear-gradient(180deg,#ff6b6b,#e63939);
       color: #fff;
@@ -128,11 +128,11 @@
     }
     .btn-delete:hover { transform: translateY(-2px); filter: brightness(.92); }
 
-    /* Página do personal */
+    
     .personal-page img.big { width:140px; height:140px; border-radius:50%; display:block; margin:10px auto; object-fit:cover; }
     .personal-info p { margin:8px 0; }
 
-    /* Seletor de dias e horários */
+    
     .day-row { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
     .day-btn {
       padding:8px 10px; border-radius:8px; border:1px solid #dfe6ea; background:#fafafa; cursor:pointer;
@@ -151,7 +151,7 @@
     .hour.unavailable { background:#fff2f2; color:#cc3333; border-color:#f1b6b6; cursor:not-allowed; opacity:0.9; }
     .hour.selected { box-shadow:0 6px 18px rgba(0,0,0,0.06); transform:translateY(-2px); border-color:#009933; }
 
-    /* Abas do dashboard do personal */
+    
     .tabs { display:flex; gap:8px; margin-bottom:10px; }
     .tab {
       padding:10px 14px; border-radius:8px; background:#fff; border:1px solid #e8ecf0; cursor:pointer; font-weight:700;
@@ -196,11 +196,8 @@
   <div id="root" class="app"></div>
 
   <script type="text/babel">
-    /******************************
-     * CAMPINA FIT - app completo
-     ******************************/
 
-    // ------- dados iniciais (personais fictícios) -------
+    
     const PERSONAIS_PADRAO = [
       { id: 1, nome: "Carlos Silva", idade: 29, preco: "R$ 60 / sessão", foto: "https://i.pravatar.cc/150?img=12", qualificacoes: "Musculação, HIIT", academias: "Smart Fit – Centro", isDefault: true },
       { id: 2, nome: "João Pereira", idade: 32, preco: "R$ 70 / sessão", foto: "https://i.pravatar.cc/150?img=13", qualificacoes: "Hipertrofia, Funcional", academias: "F21 – Catolé", isDefault: true },
@@ -209,17 +206,17 @@
       { id: 5, nome: "Ricardo Melo", idade: 34, preco: "R$ 80 / sessão", foto: "https://i.pravatar.cc/150?img=17", qualificacoes: "Performance, Fisiologia", academias: "Top Gym – Centro", isDefault: true }
     ];
 
-    // ------- helpers localStorage -------
+    
     function carregarPersonais() {
       try {
         const raw = localStorage.getItem('campina_personais');
         if (!raw) {
-          // inicializa com defaults (marcados como isDefault:true)
+          
           localStorage.setItem('campina_personais', JSON.stringify(PERSONAIS_PADRAO));
           return PERSONAIS_PADRAO.slice();
         }
         const parsed = JSON.parse(raw);
-        // Garantir que personais padrão tenham isDefault true (compatibilidade)
+        
         const merged = parsed.map(p => ({ ...p, isDefault: p.isDefault === undefined ? false : p.isDefault }));
         return merged;
       } catch {
@@ -238,9 +235,9 @@
     const DIAS = ['SEG','TER','QUA','QUI','SEX','SAB'];
     const HORARIOS = ['07:00','09:00','14:00','18:00'];
 
-    // ------- componente principal -------
+    
     function App() {
-      const [tela, setTela] = React.useState('home'); // telas: home | perfil | cadastro | aluno-dashboard | personal-dashboard | personal-page
+      const [tela, setTela] = React.useState('home');
       const [papelSelecionado, setPapelSelecionado] = React.useState(null);
       const [personais, setPersonais] = React.useState(() => carregarPersonais());
       const [usuario, setUsuario] = React.useState(() => carregarUsuario());
@@ -270,9 +267,8 @@
         if (per === 'aluno-dashboard' || per === 'personal-dashboard') { setTela('cadastro'); return; }
       }
 
-      // após cadastro concluído
+      
       function onCadastroConcluido(novoUsuario) {
-        // se for personal, criar perfil de personal (marcado isDefault:false)
         if (novoUsuario.role === 'personal') {
           const newPersonal = {
             id: Date.now(),
@@ -289,7 +285,6 @@
             salvarPersonais(next);
             return next;
           });
-          // vincular o usuário ao personal criado (opcional)
           novoUsuario.linkedPersonalId = newPersonal.id;
         }
 
@@ -299,10 +294,8 @@
         else setTela('personal-dashboard');
       }
 
-      // abrir página individual do personal (aluno)
       function abrirPaginaPersonal(p) { setPersonalSelecionado(p); setTela('personal-page'); }
 
-      // criar agendamento
       function criarAgendamento(agendamento) {
         setAgendamentos(prev => {
           const proximo = [...prev, agendamento];
@@ -320,13 +313,12 @@
         });
       }
 
-      // atualizar perfil do personal vinculado ao usuário (se houver) e usuário
+      
       function atualizarPerfilUsuario(usuarioAtualizado) {
-        // salvar usuário
         salvarUsuario(usuarioAtualizado);
         setUsuario(usuarioAtualizado);
 
-        // se o usuário estiver vinculado a um personal existente, atualizar esse personal também
+        // se o usuário estiver vinculado a um personal existente atualizar esse personal também
         if (usuarioAtualizado.linkedPersonalId) {
           const pid = Number(usuarioAtualizado.linkedPersonalId);
           setPersonais(prev => {
@@ -507,7 +499,7 @@
       );
     }
 
-    // ------- componente de cadastro (validação obrigatória) -------
+    // validação obrigatória pra fazer o cadastro de aluno e personal
     function Cadastro({ role, onCancel, onComplete, personais }) {
       const [nome, setNome] = React.useState('');
       const [idade, setIdade] = React.useState('');
@@ -573,7 +565,7 @@
       );
     }
 
-    // ------- dashboard do aluno (catálogo) -------
+    // dashboard do aluno (catálogo dos personais)
     function DashboardAluno({ personais, onView, onLogout, onRequestDelete }) {
       return (
         <div>
@@ -596,7 +588,7 @@
                 <div style={{display:'flex', alignItems:'center', gap:8}}>
                   <button className="btn" style={{padding:'8px 10px', minWidth:110}} onClick={()=>onView(p)}>Ver serviços</button>
 
-                  {/* mostrar botão Excluir apenas se NÃO for padrão */}
+                  {/* mostrar botao Excluir apenas se NÃO for padrão (pra poder excluir os perfis criados e nao lotar de perfis a aba etc etc) */}
                   {p.isDefault !== true && (
                     <button className="btn-delete" onClick={() => onRequestDelete(p.id, p.nome)}>Excluir</button>
                   )}
@@ -612,14 +604,14 @@
       );
     }
 
-    // ------- página individual do personal (aluno) -------
+    // página individual do personal (aluno)
     function PersonalPage({ personal, onBack, onCreateAppointment, currentUser, agendamentos }) {
       const [diaSelecionado, setDiaSelecionado] = React.useState(null);
       const [horaSelecionada, setHoraSelecionada] = React.useState(null);
 
-      // verifica se o horário está disponível para esse personal e dia
+      
       function horarioDisponivel(dia, hora) {
-        // se já existe agendamento para mesmo personal/dia/hora e status != 'recusado', bloquear
+        
         return !agendamentos.some(a =>
           a.personalId === personal.id && a.dia === dia && a.hora === hora && a.status !== 'recusado'
         );
@@ -700,7 +692,7 @@
       );
     }
 
-    // ------- dashboard do personal com abas (PEDIDOS / MEU PERFIL) -------
+    // personal com abas (PEDIDOS / MEU PERFIL)
     function DashboardPersonal({ usuario, agendamentos, onAceitar, onRecusar, onSalvarPerfil, personais, onLogout }) {
       const [abaAtiva, setAbaAtiva] = React.useState('pedidos'); // pedidos | perfil
       const [editavel, setEditavel] = React.useState(false);
@@ -815,9 +807,8 @@
       );
     }
 
-    // ------- render do app -------
+    // render do app
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>
-
